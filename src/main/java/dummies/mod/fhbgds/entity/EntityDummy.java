@@ -2,7 +2,7 @@ package dummies.mod.fhbgds.entity;
 
 import java.util.UUID;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -15,18 +15,28 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dummies.mod.fhbgds.Dummies;
-import dummies.mod.fhbgds.client.render.CustomSkin;
-import dummies.mod.fhbgds.util.Util;
 
 public class EntityDummy extends EntityCreature{
 	
-	public String shooter;
+	public String shooterName;
 	public UUID shooterID;
-	public ResourceLocation skinLoc = CustomSkin.locationStevePng;
+	public ResourceLocation skinLoc;
 
+	public EntityDummy(World world, EntityPlayer owner){
+		this(world);
+		this.shooterID = owner.getPersistentID();
+		this.shooterName = owner.getGameProfile().getName();
+		this.setCustomNameTag(shooterName);
+	}
+	
 	public EntityDummy(World world) {
 		super(world);
 		this.setSize(1.0F, 2.0F);
@@ -49,29 +59,62 @@ public class EntityDummy extends EntityCreature{
 		this.setAlwaysRenderNameTag(true);
 	}
 	
-	public void setEntity(Entity e){
-		if(e instanceof EntityPlayer){
-			EntityPlayer player = (EntityPlayer) e;
-			this.shooter = player.getDisplayName();
-			this.setCustomNameTag(this.shooter);
-			this.shooterID = player.getUniqueID();
-			this.skinLoc = Util.getPlayerSkinLoc(this.shooterID);
-		}
-	}
-	
-	@Override
-	public void entityInit() {
-		super.entityInit();
-	}
-
 	@Override
 	public boolean canDespawn(){
 		return false;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public ResourceLocation getLocationSkin() {
+		String newSkin = getPlayerSkin();
+
+		if (skinLoc == null || !newSkin.equals(shooterName)) {
+			skinLoc = AbstractClientPlayer.getLocationSkin(newSkin);
+			AbstractClientPlayer.getDownloadImageSkin(skinLoc, newSkin);
+		}
+		shooterName = newSkin;
+		return skinLoc;
+	}
+
+	public String getPlayerSkin() {
+		return hasCustomNameTag()? getCustomNameTag() : this.shooterName;
 	}
 	
 	@Override
 	public void onLivingUpdate(){
 		super.onLivingUpdate();
 		if(this.ticksExisted > Dummies.cloneLifespan) this.kill();
+	}
+	
+	@Override
+	public void writeEntityToNBT(NBTTagCompound tag) {
+		super.writeEntityToNBT(tag);
+
+		tag.setString("OwnerUUID", this.shooterID.toString());
+		tag.setString("OwnerName", this.hasCustomNameTag()? this.getCustomNameTag() : this.shooterName);
+	}
+	
+	@Override
+	public void readEntityFromNBT(NBTTagCompound tag) {
+		super.readEntityFromNBT(tag);
+		
+		System.out.println(tag.getString("OwnerName"));
+
+		String uuid;
+		if(tag.hasKey("OwnerName", Constants.NBT.TAG_STRING)){
+			String ownerName = tag.getString("OwnerName");
+			uuid = PreYggdrasilConverter.func_152719_a(ownerName);
+			this.shooterName = ownerName;
+		}else{
+			uuid = tag.getString("OwnerUUID");
+			this.shooterName = tag.getString("OwnerName");
+		}
+		try{
+			shooterID = UUID.fromString(uuid);
+		}catch(Exception e){
+			System.err.println("Failed to parse UUID: " + uuid);
+			e.printStackTrace();
+		}
+		System.out.println(this.shooterName);
 	}
 }

@@ -23,10 +23,9 @@ public class EntitySummoner extends EntityArrow {
 	
 	public void spawnEntity(){
 		if(!this.worldObj.isRemote){
-			EntityDummy dummy = new EntityDummy(this.worldObj);
+			EntityDummy dummy = new EntityDummy(this.worldObj, (EntityPlayer)this.shootingEntity);
 			dummy.setPositionAndRotation(this.posX, this.posY, this.posZ, 0, 0);
 			dummy.setVelocity(this.motionX, this.motionY, this.motionZ);
-			dummy.setEntity(this.shootingEntity);
 			this.worldObj.spawnEntityInWorld(dummy);
 		}
 		this.setDead();

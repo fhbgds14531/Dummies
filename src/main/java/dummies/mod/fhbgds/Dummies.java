@@ -1,5 +1,6 @@
 package dummies.mod.fhbgds;
 
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,6 +22,12 @@ import dummies.mod.fhbgds.items.ItemCloner;
 import dummies.mod.fhbgds.lib.Reference;
 import dummies.mod.fhbgds.proxy.ProxyCommon;
 
+/**
+ * All credit for the rendering of the dummies goes to the OpenMods team at
+ * {@code https://github.com/OpenMods/}. 
+ * I reworked some of their code because I was stupid and didn't realize that
+ * {@linkplain AbstractClientPlayer} had static methods.
+ */
 @Mod(modid=Reference.MODID, name=Reference.MODNAME, version=Reference.VERSION)
 public class Dummies {
 
