@@ -1,0 +1,16 @@
+[
+{
+  "modid": "dummies",
+  "name": "Dummies",
+  "description": "Make dummy versions of yourself!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["fhbgds14531"],
+  "credits": "Soaryn, for the idea",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
