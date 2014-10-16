@@ -100,19 +100,19 @@ public class EntityDummy extends EntityCreature{
 		
 		System.out.println(tag.getString("OwnerName"));
 
-		String uuid;
+		String id;
 		if(tag.hasKey("OwnerName", Constants.NBT.TAG_STRING)){
 			String ownerName = tag.getString("OwnerName");
-			uuid = PreYggdrasilConverter.func_152719_a(ownerName);
+			id = PreYggdrasilConverter.func_152719_a(ownerName);
 			this.shooterName = ownerName;
 		}else{
-			uuid = tag.getString("OwnerUUID");
+			id = tag.getString("OwnerUUID");
 			this.shooterName = tag.getString("OwnerName");
 		}
 		try{
-			shooterID = UUID.fromString(uuid);
+			shooterID = UUID.fromString(id);
 		}catch(Exception e){
-			System.err.println("Failed to parse UUID: " + uuid);
+			System.err.println("Failed to parse UUID: " + id);
 			e.printStackTrace();
 		}
 		System.out.println(this.shooterName);

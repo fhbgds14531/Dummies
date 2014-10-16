@@ -98,3 +98,5 @@
 *.bin
 *.log
 *.jar
+/bin/
+/bin/
